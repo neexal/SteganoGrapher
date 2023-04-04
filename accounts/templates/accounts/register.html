@@ -1,0 +1,33 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block form %}
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <form action="{% url 'accounts:register' %}" method="post">
+        {% csrf_token %}
+        <img src="{% static 'audiosteganography/assets/logo.png'%}" height="auto"
+                        alt="MDB Logo" loading="lazy" />
+        <h1 class="title">Register: Steganography</h1>
+        <p class="tagline">Unlocking Hidden Messages - Steganography at its Finest!</p>
+
+        {% if message %}
+            <p class="error">{{ message }}</p>
+        {% endif %}
+        
+        {% for field in form %}
+        <div class="mb-4">
+            <label class="form-label" for="username">{{field.label}}:</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary btn-block mb-4">Register</button>
+    
+      <div class="text-center">
+        <p class="small">Already a member? <a href="{% url 'accounts:login' %}">Sign in</a></p>
+      </div>
+
+    </form>
+
+   
+{% endblock %}
