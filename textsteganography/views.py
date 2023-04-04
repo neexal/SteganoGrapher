@@ -10,10 +10,8 @@ def encode(request):
     if request.method == 'POST':
         message = request.POST.get('message')
         password = request.POST.get('password')
-        print(f"message: {message}")
-        print(f"password: {password}")
-        text_message = TextMessage.objects.create(message=message, password=password)
-        print(f"text_message: {text_message}")
+        text_file = request.FILES.get('text_file')
+        text_message = TextMessage.objects.create(user=request.user,message=message, text_file = text_file)
         text_message.save()
         return redirect('textsteganography:download')
     else:

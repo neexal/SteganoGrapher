@@ -33,6 +33,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('audiosteganography/', include('audiosteganography.urls', namespace='audiosteganography')),
     path('textsteganography/', include('textsteganography.urls', namespace='textsteganography')),
+    path('imagesteganography/', include('imagesteganography.urls', namespace='imagesteganography')),
+    path('videosteganography/', include('videosteganography.urls', namespace='videosteganography')),
 
 ]
 

@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'dashboard',
     'audiosteganography',
     'textsteganography',
+    'imagesteganography',
+    'videosteganography',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,9 +136,13 @@ AUTH_USER_MODEL = 'accounts.User'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-# Directory where audio messages will be stored
-AUDIO_DIR = 'audio'
+# # Directory where audio messages will be stored
+# AUDIO_DIR = 'audio'
+# TEXT_DIR = 'text'
 
-# Create the directory if it doesn't exist
-if not os.path.exists(AUDIO_DIR):
-    os.makedirs(AUDIO_DIR)
+# # # Create the directory if it doesn't exist
+# # if not os.path.exists(AUDIO_DIR):
+# #     os.makedirs(AUDIO_DIR)
+
+# if not os.path.exists(TEXT_DIR):
+#     os.makedirs(TEXT_DIR)

@@ -11,29 +11,28 @@
             <div class="col-md-6 col-sm-12">
                 <img class="img-fluid"
                     src="https://images.pexels.com/photos/3771842/pexels-photo-3771842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    alt="Text Steganogrssaphy" srcset="">
+                    alt="Audio Steganography" srcset="">
             </div>
             <div class="col-md-6 col-sm-12">
-                <p class="title">Text Steganography</p>
+                <p class="title">Video Steganography</p>
                 <p class="tagline">Hear the message, not the noise.</p>
-                <p class="desc">"Listen up! With Text steganography, you can communicate confidential messages without
-                    anyone else even knowing it! By embedding your secret information into regular text files, you can
+                <p class="desc">"Listen up! With audio steganography, you can communicate confidential messages without
+                    anyone else even knowing it! By embedding your secret information into regular audio files, you can
                     hide
-                    your message in plain text. And the best part? No one will even notice it's there!"</p>
+                    your message in plain sound. And the best part? No one will even notice it's there!"</p>
 
 
-                    <form action="{% url 'textsteganography:encode' %}" method="POST" enctype="multipart/form-data">
+                    <form action="{% url 'audiosteganography:encode' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-4">
                             <label class="form-label" for="message">Write the message to encrypt:</label>
-                            <textarea class="form-control" name ="message" id="message" rows="4" required></textarea>
-                        </div>
-
-                        <div class="row mb-4">
-                            <label class="form-label" for="audio">Upload your text document:</label>
-                            <input type="file" class="form-control" name="text_file" id="text" accept="text/plain" required/>
+                            <textarea class="form-control" name="message" id="message" rows="4" required></textarea>
                         </div>
                     
+                        <div class="row mb-4">
+                            <label class="form-label" for="audio">Upload your audio:</label>
+                            <input type="file" class="form-control" name="audio_file" id="audio" accept="audio/mp3,audio/*" required/>
+                        </div>
                         <div class="row">
                             <div class="col-md mb-4">
                                 <label class="form-label" for="password">Password</label>

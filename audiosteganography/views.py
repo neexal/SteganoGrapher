@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import AudioMessage
-from django.core.files.storage import FileSystemStorage
 
 
 # Create your views here.
@@ -13,15 +12,21 @@ def index(request):
     
     return render(request, 'audiosteganography/index.html')
 
+@login_required
 def encode(request):
     if request.method == 'POST':
         message = request.POST.get('message')
         audio_file = request.FILES.get('audio_file')
         audio = AudioMessage(message=message, audio_file=audio_file, user=request.user) # attach current user to audio
         audio.save()
-        return redirect('audiosteganography:home')
+        return redirect('audiosteganography:download')
     else:
         return render(request, 'audiosteganography/index.html')
+
+@login_required
+def download(request):
+    return render(request, 'audiosteganography/download.html')
+
 
 # def encode(request):
 #     user = request.user

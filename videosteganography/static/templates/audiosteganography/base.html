@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static 'landing_page/images/favicon.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'landing_page/css/reset.css' %}">
-    <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'audiosteganography/css/stegano.css' %}">
 
     <!-- Font Awesome -->
@@ -19,7 +17,7 @@
     <!-- MDB -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css" rel="stylesheet" />
 
-    <title>Steganography: Hiding in plain sight</title>
+    <title>Audio Steganography: Hiding in plain sight</title>
 </head>
 
 <body>
@@ -43,57 +41,35 @@
                 <!-- Left links -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'imagesteganography:index' %}">Image Steganography</a>
+                        <a class="nav-link" href="#">Image Steganography</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'audiosteganography:index' %}">Audio Steganography</a>
+                        <a class="nav-link" href="#">Audio Steganography</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'videosteganography:index' %}">Video Steganography</a>
+                        <a class="nav-link" href="#">Video Steganography</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'textsteganography:index' %}">Text Steganography</a>
+                        <a class="nav-link" href="#">Text Steganography</a>
                     </li>
                 </ul>
                 <!-- Left links -->
             </div>
-<!-- Right elements -->
-<div class="d-flex align-items-center">
-    <!-- Icon -->
-    {% if user.is_authenticated %}
-    <li class="nav-link m-3">Logged in as: <b>{{user}}</b></li>
-    <a class="text-reset me-3" href="{% url 'accounts:logout' %}">
-        <i class="fas fa-sign-out"></i> Logout
-    </a>
-    {% else %}
 
-    <a class="text-reset me-3" href="{% url 'accounts:login' %}">
-        <i class="fas fa-sign-out"></i> Login
-    </a>
-
-    <a class="text-reset me-3" href="{% url 'accounts:register' %}">
-        <i class="fas fa-sign-out"></i> Register
-    </a>
-    {% endif %}
-</div>
-</div>
-            
+            <!-- Right elements -->
+            <div class="d-flex align-items-center">
+                <!-- Icon -->
+                <a class="text-reset me-3" href="{% url 'accounts:logout' %}">
+                    <i class="fas fa-sign-out"></i> Logout
+                </a>
+            </div>
         </div>
-
         <!-- Container wrapper -->
     </nav>
   
-    {% block form %}
+    {% block content %}
     
-    {% endblock form %}
-
-    {% block content %}{% endblock content %}
-
-    <!-- MDB -->
-<script
-type="text/javascript"
-src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
-></script>
+    {% endblock content %}
 </body>
 
 </html>

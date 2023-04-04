@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 
-app_name = 'audiosteganography'
+app_name = 'videosteganography'
 
 urlpatterns = [
     path('', views.index, name='index'),
