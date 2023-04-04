@@ -11,7 +11,7 @@
             <div class="col-md-6 col-sm-12">
                 <img class="img-fluid"
                     src="https://images.pexels.com/photos/3771842/pexels-photo-3771842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    alt="Text Steganography" srcset="">
+                    alt="Text Steganogrssaphy" srcset="">
             </div>
             <div class="col-md-6 col-sm-12">
                 <p class="title">Text Steganography</p>
@@ -22,28 +22,28 @@
                     your message in plain sound. And the best part? No one will even notice it's there!"</p>
 
 
-                <form action="{% url 'textsteganography:encode' %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        <label class="form-label" for="message">Write the message to encrypt:</label>
-                        <textarea class="form-control" name ="message" id="message" rows="4" required></textarea>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md mb-4">
-                            <label class="form-label" for="password">Password</label>
-                            <input type="password" name="password" id="password" class="form-control" />
+                    <form action="{% url 'textsteganography:encode' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label" for="message">Write the message to encrypt:</label>
+                            <textarea class="form-control" name ="message" id="message" rows="4" required></textarea>
                         </div>
-                        <div class="col-md mb-4">
-                            <label class="form-label" for="Cpassword">Confirm Password</label>
-                            <input type="password" name="cpassword" id="Cpassword" class="form-control" />
+                    
+                        <div class="row">
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="password">Password</label>
+                                <input type="password" name="password" id="password" class="form-control" />
+                            </div>
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="Cpassword">Confirm Password</label>
+                                <input type="password" name="cpassword" id="Cpassword" class="form-control" />
+                            </div>
                         </div>
-                    </div>
-
-                    <a class="text-reset me-3 btn btn-success" href="{% url 'textsteganography:encode' %}">
-                        <i class="fas fa-lock"></i> Encode
-                    </a>
-                </form>
+                    
+                        <button type="submit" class="text-reset me-3 btn btn-success">
+                            <i class="fas fa-lock"></i> Encode
+                        </button>
+                    </form>
             </div>
         </div>
     </div>

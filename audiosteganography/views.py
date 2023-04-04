@@ -19,7 +19,7 @@ def encode(request):
         audio_file = request.FILES.get('audio_file')
         audio = AudioMessage(message=message, audio_file=audio_file, user=request.user) # attach current user to audio
         audio.save()
-        return redirect('home')
+        return redirect('audiosteganography:home')
     else:
         return render(request, 'audiosteganography/index.html')
 

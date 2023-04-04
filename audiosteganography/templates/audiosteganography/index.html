@@ -22,32 +22,32 @@
                     your message in plain sound. And the best part? No one will even notice it's there!"</p>
 
 
-                <form action="{% url 'audiosteganography:encode' %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        <label class="form-label" for="message">Write the message to encrypt:</label>
-                        <textarea class="form-control" id="message" rows="4" required></textarea>
-                    </div>
-
-                    <div class="row mb-4">
-                        <label class="form-label" for="audio">Upload your audio:</label>
-                        <input type="file" class="form-control" name="audio_file" id="audio" accept="audio/mp3,audio/*" required/>
-                    </div>
-                    <div class="row">
-                        <div class="col-md mb-4">
-                            <label class="form-label" for="password">Password</label>
-                            <input type="password" id="password" class="form-control" />
+                    <form action="{% url 'audiosteganography:encode' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label" for="message">Write the message to encrypt:</label>
+                            <textarea class="form-control" name="message" id="message" rows="4" required></textarea>
                         </div>
-                        <div class="col-md mb-4">
-                            <label class="form-label" for="Cpassword">Confirm Password</label>
-                            <input type="password" id="Cpassword" class="form-control" />
+                    
+                        <div class="row mb-4">
+                            <label class="form-label" for="audio">Upload your audio:</label>
+                            <input type="file" class="form-control" name="audio_file" id="audio" accept="audio/mp3,audio/*" required/>
                         </div>
-                    </div>
-
-                    <a class="text-reset me-3 btn btn-success" href="{% url 'audiosteganography:encode' %}">
-                        <i class="fas fa-lock"></i> Encode
-                    </a>
-                </form>
+                        <div class="row">
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="password">Password</label>
+                                <input type="password" name="password" id="password" class="form-control" />
+                            </div>
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="Cpassword">Confirm Password</label>
+                                <input type="password" name="cpassword" id="Cpassword" class="form-control" />
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="text-reset me-3 btn btn-success">
+                            <i class="fas fa-lock"></i> Encode
+                        </button>
+                    </form>
             </div>
         </div>
     </div>
