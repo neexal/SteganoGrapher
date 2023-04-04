@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block form %}
-<div class="d-flex align-items-center justify-content-center vh-100">
+<div class="d-flex align-items-center justify-content-center  ">
     <form action="{% url 'accounts:login' %}" method="post">
         {% csrf_token %}
         <img src="{% static 'audiosteganography/assets/logo.png'%}" height="auto"

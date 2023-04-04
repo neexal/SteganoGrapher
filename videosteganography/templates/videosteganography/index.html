@@ -5,21 +5,18 @@
 
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-center vh-100">
+<div class="d-flex align-items-center justify-content-center  ">
     <div class="container mt-5">
         <div class="row mt-5">
             <div class="col-md-6 col-sm-12">
                 <img class="img-fluid"
-                    src="https://images.pexels.com/photos/3771842/pexels-photo-3771842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    alt="Audio Steganography" srcset="">
+                    src="https://images.pexels.com/photos/2095597/pexels-photo-2095597.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    alt="Video Steganography" srcset="">
             </div>
             <div class="col-md-6 col-sm-12">
                 <p class="title">Video Steganography</p>
-                <p class="tagline">Hear the message, not the noise.</p>
-                <p class="desc">"Listen up! With audio steganography, you can communicate confidential messages without
-                    anyone else even knowing it! By embedding your secret information into regular audio files, you can
-                    hide
-                    your message in plain sound. And the best part? No one will even notice it's there!"</p>
+                <p class="tagline">Secure secrets with Video steganography - hidden in plain sight.</p>
+                <p class="desc">"Video steganography lets you hide confidential messages in plain sight. By embedding your secret information within videos, you can communicate securely without detection. It's a powerful tool for covert communication that guarantees the confidentiality of your messages."</p>
 
 
                     <form action="{% url 'audiosteganography:encode' %}" method="post" enctype="multipart/form-data">
