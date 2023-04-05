@@ -19,7 +19,7 @@
                 <p class="desc">"Video steganography lets you hide confidential messages in plain sight. By embedding your secret information within videos, you can communicate securely without detection. It's a powerful tool for covert communication that guarantees the confidentiality of your messages."</p>
 
 
-                    <form action="{% url 'audiosteganography:encode' %}" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'videosteganography:encode' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-4">
                             <label class="form-label" for="message">Write the message to encrypt:</label>
@@ -27,8 +27,8 @@
                         </div>
                     
                         <div class="row mb-4">
-                            <label class="form-label" for="audio">Upload your audio:</label>
-                            <input type="file" class="form-control" name="audio_file" id="audio" accept="audio/mp3,audio/*" required/>
+                            <label class="form-label" for="video">Upload your Video:</label>
+                            <input type="file" class="form-control" name="video_file" id="video" accept="video/*" required/>
                         </div>
                         <div class="row">
                             <div class="col-md mb-4">

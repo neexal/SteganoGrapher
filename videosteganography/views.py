@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-# from .models import AudioMessage
+from .models import VideoMessage
 
 
 # Create your views here.
@@ -14,14 +14,14 @@ def index(request):
 
 @login_required
 def encode(request):
-    # if request.method == 'POST':
-    #     message = request.POST.get('message')
-    #     video_file = request.FILES.get('video_file')
-    #     video = videoMessage(message=message, video_file=video_file, user=request.user) # attach current user to video
-    #     video.save()
-    #     return redirect('videosteganography:download')
-    # else:
-    return render(request, 'videosteganography/index.html')
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        video_file = request.FILES.get('video_file')
+        video = VideoMessage(message=message, video_file=video_file, user=request.user) # attach current user to video
+        video.save()
+        return redirect('videosteganography:download')
+    else:
+        return render(request, 'videosteganography/index.html')
 
 @login_required
 def download(request):
