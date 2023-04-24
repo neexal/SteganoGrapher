@@ -42,9 +42,32 @@
                 </a>
                 <!-- Left links -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
+
+                    <li class="nav-item dropdown">
+                        <a
+                          class="nav-link dropdown-toggle"
+                          href="#"
+                          id="navbarDropdown"
+                          role="button"
+                          data-mdb-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Image Steganography
+                        </a>
+                        <!-- Dropdown menu -->
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li>
+                            <a class="dropdown-item" href="{% url 'imagesteganography:index' %}">Encode</a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="{% url 'imagesteganography:decode' %}">Decode</a>
+                          </li>
+                        </ul>
+                      </li>
+              
+                    {% comment %} <li class="nav-item">
                         <a class="nav-link" href="{% url 'imagesteganography:index' %}">Image Steganography</a>
-                    </li>
+                    </li> {% endcomment %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'audiosteganography:index' %}">Audio Steganography</a>
                     </li>
