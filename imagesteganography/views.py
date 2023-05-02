@@ -103,6 +103,7 @@ def decode(request):
         image_file = request.FILES.get('image_file')
         image = ImageMessage( image_file=image_file, user=request.user) # attach current user to image
         image.save()
+        temp_image = image
         img = Image.open(image_file)
         img_path = os.path.join('media', 'image', image_file.name)
         img.save(img_path)
@@ -137,7 +138,7 @@ def decode(request):
         image = cv2.imread(img_path)
         message = find_data(image)
         os.remove(img_path)
-        context = {'message': message}
+        context = {'message': message, 'image': temp_image}
         return render(request, 'imagesteganography/result.html', context)
     else:
         return render(request, 'imagesteganography/decode.html')

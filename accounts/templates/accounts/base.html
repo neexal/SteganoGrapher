@@ -68,9 +68,28 @@
                     {% comment %} <li class="nav-item">
                         <a class="nav-link" href="{% url 'imagesteganography:index' %}">Image Steganography</a>
                     </li> {% endcomment %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'audiosteganography:index' %}">Audio Steganography</a>
-                    </li>
+                    <li class="nav-item dropdown">
+                        <a
+                          class="nav-link dropdown-toggle"
+                          href="#"
+                          id="navbarDropdown"
+                          role="button"
+                          data-mdb-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Audio Steganography
+                        </a>
+                        <!-- Dropdown menu -->
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li>
+                            <a class="dropdown-item" href="{% url 'audiosteganography:index' %}">Encode</a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="{% url 'audiosteganography:decode' %}">Decode</a>
+                          </li>
+                        </ul>
+                      </li>
+              
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'videosteganography:index' %}">Video Steganography</a>
                     </li>

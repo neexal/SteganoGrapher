@@ -1,3 +1,9 @@
 asgiref==3.6.0
+autopep8==2.0.2
 Django==4.1.7
+numpy==1.24.3
+opencv-python==4.7.0.72
+Pillow==9.5.0
+pycodestyle==2.10.0
 sqlparse==0.4.3
+tomli==2.0.1

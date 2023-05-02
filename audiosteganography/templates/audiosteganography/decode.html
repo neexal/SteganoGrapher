@@ -1,0 +1,46 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+
+
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center  ">
+    <div class="container mt-5">
+        <div class="row mt-5">
+            <div class="col-md-6 col-sm-12">
+                <img class="img-fluid"
+                    src="https://images.pexels.com/photos/3771842/pexels-photo-3771842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    alt="Audio Steganography" srcset="">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <p class="title">Audio Steganography</p>
+                <p class="tagline">Hear the message, not the noise.</p>
+                <p class="desc">"Listen up! With audio steganography, you can communicate confidential messages without
+                    anyone else even knowing it! By embedding your secret information into regular audio files, you can
+                    hide
+                    your message in plain sound. And the best part? No one will even notice it's there!"</p>
+
+
+                    <form action="{% url 'audiosteganography:decode' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}                  
+                        <div class="row mb-4">
+                            <label class="form-label" for="audio">Upload your audio:</label>
+                            <input type="file" class="form-control" name="audio_file" id="audio" accept="audio/mp3,audio/*" required/>
+                        </div>
+                        <div class="row">
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="password">Password</label>
+                                <input type="password" name="password" id="password" class="form-control" />
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="text-reset me-3 btn btn-success">
+                            <i class="fas fa-lock"></i> Decode
+                        </button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
