@@ -36,7 +36,7 @@
             <!-- Collapsible wrapper -->
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Navbar brand -->
-                <a class="navbar-brand mt-2 mt-lg-0" href="landing:index">
+                <a class="navbar-brand mt-2 mt-lg-0" href="audiosteganography:index">
                     <img src="{% static 'audiosteganography/assets/logo.png'%}" height="25"
                         alt="MDB Logo" loading="lazy" />
                 </a>
@@ -90,12 +90,48 @@
                         </ul>
                       </li>
               
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'videosteganography:index' %}">Video Steganography</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'textsteganography:index' %}">Text Steganography</a>
-                    </li>
+                      <li class="nav-item dropdown">
+                        <a
+                          class="nav-link dropdown-toggle"
+                          href="#"
+                          id="navbarDropdown"
+                          role="button"
+                          data-mdb-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Video Steganography
+                        </a>
+                        <!-- Dropdown menu -->
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li>
+                            <a class="dropdown-item" href="{% url 'videosteganography:index' %}">Encode</a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="{% url 'videosteganography:decode' %}">Decode</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a
+                          class="nav-link dropdown-toggle"
+                          href="#"
+                          id="navbarDropdown"
+                          role="button"
+                          data-mdb-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Text Steganography
+                        </a>
+                        <!-- Dropdown menu -->
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li>
+                            <a class="dropdown-item" href="{% url 'textsteganography:index' %}">Encode</a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="{% url 'textsteganography:decode' %}">Decode</a>
+                          </li>
+                        </ul>
+                      </li>
                 </ul>
                 <!-- Left links -->
             </div>

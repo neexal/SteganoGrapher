@@ -19,3 +19,7 @@ def encode(request):
     
 def download(request):
     return render(request,'textsteganography/download.html')
+
+
+def decode(request):
+    pass
