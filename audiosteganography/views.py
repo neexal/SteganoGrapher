@@ -56,7 +56,6 @@ def encode(request):
             print("[INFO] ENCODING DATA Successful")
             print("[INFO] LOCATION:{}".format(audio_file.name))
             song.close()
-       
         
             context = {'audio_file': audio_file}
             return redirect('audiosteganography:download', context)

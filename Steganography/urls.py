@@ -28,9 +28,10 @@ admin.site.site_title = 'SteganoGrapher Dashboard'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('landing_page.urls', namespace='landing_page')),
+    # path('', include('landing_page.urls', namespace='landing_page')),
     path('dashboard/', include('dashboard.urls', namespace='dashboard')),
-    path('accounts/', include('accounts.urls', namespace='accounts')),
+    # path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('', include('accounts.urls', namespace='accounts')),
     path('audiosteganography/', include('audiosteganography.urls', namespace='audiosteganography')),
     path('textsteganography/', include('textsteganography.urls', namespace='textsteganography')),
     path('imagesteganography/', include('imagesteganography.urls', namespace='imagesteganography')),

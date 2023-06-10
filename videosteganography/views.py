@@ -28,6 +28,9 @@ def download(request):
     return render(request, 'videosteganography/download.html')
 
 
+def decode(request):
+    pass
+
 # def encode(request):
 #     user = request.user
 #     if request.method == 'POST':
