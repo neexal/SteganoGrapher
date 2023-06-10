@@ -5,18 +5,18 @@
 
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-center  ">
+<div class="d-flex align-items-center justify-content-center ">
     <div class="container mt-5">
         <div class="row mt-5">
             <div class="col-md-6 col-sm-12">
                 <img class="img-fluid"
-                    src="https://images.pexels.com/photos/3771842/pexels-photo-3771842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    src="{{ image.image_file.url }}"
                     alt="Text Steganography" srcset="">
             </div>
             <div class="col-md-6 col-sm-12">
-                <h1 class="title">Encoded Successfully</h1>
-                {{video_path}}
+                <h1 class="title">Decoded Message</h1>
                 
+                    <p>{{message}}</p>
             </div>
         </div>
     </div>

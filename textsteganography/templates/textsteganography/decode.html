@@ -1,0 +1,48 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+
+
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center">
+    <div class="container mt-5">
+        <div class="row mt-5">
+            <div class="col-md-6 col-sm-12">
+                <img class="img-fluid"
+                    src="https://images.pexels.com/photos/5474037/pexels-photo-5474037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    alt="Audio Steganography" srcset="">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <p class="title">Text Steganography</p>
+                <p class="tagline">Your message hidden in pixels.</p>
+                <p class="desc">"Transform the way you communicate sensitive information with image steganography. By hiding your confidential data within images, you can keep your secrets safe from prying eyes. With image steganography, you can communicate covertly and confidently, knowing that your message is secure.</p>
+
+
+                    <form action="{% url 'imagesteganography:decode' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <label class="form-label" for="image">Upload your Image:</label>
+                            <input type="file" class="form-control" name="image_file" id="image" accept="image/*" required/>
+                        </div>
+                        <div class="row">
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="password">Password</label>
+                                <input type="password" name="password" id="password" class="form-control" />
+                            </div>
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="Cpassword">Confirm Password</label>
+                                <input type="password" name="cpassword" id="Cpassword" class="form-control" />
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="text-reset me-3 btn btn-success">
+                            <i class="fas fa-lock"></i> Decode
+                        </button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
