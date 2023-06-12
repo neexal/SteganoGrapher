@@ -1,97 +1,237 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
+from django.core.files.base import ContentFile
 from moviepy.editor import VideoFileClip
+from moviepy.audio.AudioClip import AudioArrayClip  
 from .models import VideoMessage
+import io
+import os
+import struct
+import numpy as np
+from django.conf import settings
+from django.http import FileResponse
 
 
 def index(request):
-    # if user is not logged in, redirect to home page
+
+    #if user is not logged in, redirect to home page
     if not request.user.is_authenticated:
         return redirect('accounts:login')
+    
     return render(request, 'videosteganography/index.html')
 
+import math
+import os
+import shutil
+from subprocess import call, STDOUT
+import cv2
+from stegano import lsb
+from django.shortcuts import render, redirect
+from .models import VideoMessage
 
-@login_required
 def encode(request):
-    if request.method == 'POST' and request.FILES['video_file']:
+    def split_string(split_str, count=10):
+        per_c = math.ceil(len(split_str) / count)
+        c_cout = 0
+        out_str = ''
+        split_list = []
+        for s in split_str:
+            out_str += s
+            c_cout += 1
+            if c_cout == per_c:
+                split_list.append(out_str)
+                out_str = ''
+                c_cout = 0
+        if c_cout != 0:
+            split_list.append(out_str)
+        return split_list
+
+    def frame_extraction(video):
+        if not os.path.exists("./temp"):
+            os.makedirs("temp")
+        temp_folder = "./temp"
+        print("[INFO] temp directory is created")
+        vidcap = cv2.VideoCapture(video)
+        count = 0
+        while True:
+            success, image = vidcap.read()
+            if not success:
+                break
+            cv2.imwrite(os.path.join(temp_folder, "{:d}.png".format(count)), image)
+            count += 1
+
+    def encode_string(input_string, root="./temp/"):
+        split_string_list = split_string(input_string)
+        for i in range(0, len(split_string_list)):
+            f_name = "{}{}.png".format(root, i)
+            secret_enc = lsb.hide(f_name, split_string_list[i])
+            secret_enc.save(f_name)
+            print("[INFO] frame {} holds {}".format(f_name, lsb.reveal(f_name)))
+        print("[INFO] The message is stored in the Embedded_Video.mp4 file")
+
+    def clean_temp(path="./temp"):
+        if os.path.exists(path):
+            shutil.rmtree(path)
+            print("[INFO] temp files are cleaned up")
+
+    if request.method == 'POST':
         video_file = request.FILES['video_file']
         message = request.POST.get('message')
-        video_message = VideoMessage.objects.create(user=request.user,message=message, video_file = video_file)
+        video_path = os.path.join(settings.MEDIA_ROOT, 'video', video_file.name)
+        with open(video_path, 'wb+') as destination:
+            for chunk in video_file.chunks():
+                destination.write(chunk)
+        
+        frame_extraction(video_path)
+        call(["ffmpeg", "-i", video_path, "-q:a", "0", "-map", "a", "temp/audio.mp3", "-y"], stdout=open(os.devnull, "w"),
+             stderr=STDOUT)
+        encode_string(message)
+        call(["ffmpeg", "-i", "temp/%d.png", "-vcodec", "png", "temp/Embedded_Video.mp4", "-y"],
+             stdout=open(os.devnull, "w"), stderr=STDOUT)
+        call(["ffmpeg", "-i", "temp/Embedded_Video.mp4", "-i", "temp/audio.mp3", "-codec", "copy", "Embedded_Video.mp4",
+              "-y"], stdout=open(os.devnull, "w"), stderr=STDOUT)
+        
+        os.remove(video_path)
+        os.rename("Embedded_Video.mp4", video_path)
+        clean_temp()
+        print("[INFO] FILE LOCATION: {}".format(video_path))
+        print("=" * 100)
+
+        # Save the encoded video file in the database
+        video_message = VideoMessage.objects.create(user=request.user, message=message, video_file=video_path)
         video_message.save()
-        fs = FileSystemStorage()
-        filename = fs.save(video_file.name, video_file)
-        video_path = fs.path(filename)
-        clip = VideoFileClip(video_path)
-        audio = clip.audio
-        binary_message = ''.join(format(ord(i), '08b') for i in message)
-        binary_message += "00000000"
-        binary_message_index = 0
-        audio_length = len(audio)
-        for i in range(audio_length):
-            if binary_message_index == len(binary_message):
-                break
-            binary_frame = format(audio[i], '016b')[:-2] + binary_message[binary_message_index:binary_message_index+2]
-            audio[i] = int(binary_frame, 2)
-            binary_message_index += 2
-        new_clip = clip.set_audio(audio)
-        new_clip.write_videofile(filename, codec='libx264')
-        with open(filename, 'rb') as f:
-            video_data = f.read()
-        video_message = VideoMessage()
-        video_message.filename = filename
-        video_message.video_data = video_data
-        video_message.save()
-        return redirect('download', video_message_id=video_message.id)
-    return render(request, 'videosteganography/index.html')
+
+        return redirect('videosteganography:download', video_message_id=video_message.id)
+
+import os
+import shutil
+import cv2
+from subprocess import call, STDOUT
+from django.shortcuts import render
+from stegano import lsb
+
+def split_string(split_str, count=10):
+    per_c = math.ceil(len(split_str) / count)
+    c_cout = 0
+    out_str = ''
+    split_list = []
+    for s in split_str:
+        out_str += s
+        c_cout += 1
+        if c_cout == per_c:
+            split_list.append(out_str)
+            out_str = ''
+            c_cout = 0
+    if c_cout != 0:
+        split_list.append(out_str)
+    return split_list
+
+def frame_extraction(video):
+    if not os.path.exists("./temp"):
+        os.makedirs("temp")
+    temp_folder = "./temp"
+    print("[INFO] temp directory is created")
+    vidcap = cv2.VideoCapture(video)
+    count = 0
+    while True:
+        success, image = vidcap.read()
+        if not success:
+            break
+        cv2.imwrite(os.path.join(temp_folder, "{:d}.png".format(count)), image)
+        count += 1
+import math
+import os
+import shutil
+from subprocess import call, STDOUT
+import cv2
+from stegano import lsb
+
+from django.shortcuts import render
+
+def split_string(split_str, count=10):
+    per_c = math.ceil(len(split_str) / count)
+    c_cout = 0
+    out_str = ''
+    split_list = []
+    for s in split_str:
+        out_str += s
+        c_cout += 1
+        if c_cout == per_c:
+            split_list.append(out_str)
+            out_str = ''
+            c_cout = 0
+    if c_cout != 0:
+        split_list.append(out_str)
+    return split_list
+
+def frame_extraction(video):
+    if not os.path.exists("./temp"):
+        os.makedirs("temp")
+    temp_folder = "./temp"
+    print("[INFO] temp directory is created")
+    vidcap = cv2.VideoCapture(video)
+    count = 0
+    while True:
+        success, image = vidcap.read()
+        if not success:
+            break
+        cv2.imwrite(os.path.join(temp_folder, "{:d}.png".format(count)), image)
+        count += 1
+
+def encode_string(input_string, root="./temp/"):
+    split_string_list = split_string(input_string)
+    for i in range(0, len(split_string_list)):
+        f_name = "{}{}.png".format(root, i)
+        secret_enc = lsb.hide(f_name, split_string_list[i])
+        secret_enc.save(f_name)
+        print("[INFO] frame {} holds {}".format(f_name, lsb.reveal(f_name)))
+    print("[INFO] The message is stored in the Embedded_Video.mp4 file")
+
+def clean_temp(path="./temp"):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        print("[INFO] temp files are cleaned up")
+
+def decode(request):
+    if request.method == 'POST':
+        video_file = request.FILES['video_file']
+
+        # Save the uploaded video file to a temporary location
+        temp_folder = os.path.join(settings.MEDIA_ROOT, "temp")
+        if not os.path.exists(temp_folder):
+            os.makedirs(temp_folder)
+        video_path = os.path.join(temp_folder, video_file.name)
+        with open(video_path, 'wb') as destination:
+            for chunk in video_file.chunks():
+                destination.write(chunk)
+
+        frame_extraction(video_path)
+        secret = []
+        root = "./temp/"
+        a = ''
+        try:
+            for i in range(0, len(os.listdir(root)) - 1):
+                f_name = "{}{}.png".format(str(root), str(i))
+                secret_dec = lsb.reveal(f_name)
+                if secret_dec is None:
+                    break
+                secret.append(secret_dec)
+        except IndexError as e:
+            print('')
+        a = a.join([i for i in secret])
+        print("[*] The Encoded data was:{}".format(a))
+        print("")
+        clean_temp()
+        print("="*100)
+
+        return render(request, 'videosteganography/result.html', {'message': a})
+
+    return render(request, 'videosteganography/decode.html')
 
 @login_required
 def download(request, video_message_id):
     video_message = VideoMessage.objects.get(id=video_message_id)
-    with open(video_message.filename, 'wb') as f:
-        f.write(video_message.video_data)
-    video_path = video_message.filename
-    return render(request, 'videosteganography/download.html', {'video_path': video_path})
-
-def decode(request, video_message_id):
-    video_message = VideoMessage.objects.get(id=video_message_id)
-    with open(video_message.filename, 'wb') as f:
-        f.write(video_message.video_data)
-    clip = VideoFileClip(video_message.filename)
-    audio = clip.audio
-    binary_message = ""
-    audio_length = len(audio)
-    for i in range(audio_length):
-        binary_frame = format(audio[i], '016b')[-2:]
-        binary_message += binary_frame
-        if binary_message[-8:] == "00000000":
-            break
-    message = ""    
-    for i in range(0, len(binary_message), 8):
-        message += chr(int(binary_message[i:i+8], 2))
-        if message[-1] == "\x00":
-            break
-    return render(request, 'videosteganography/result.html', {'message': message})
-
-
-
-# def encode(request):
-#     user = request.user
-#     if request.method == 'POST':
-#         message = request.POST.get['message']
-#         video = request.FILES.get['video']
-#         password = request.POST.get['password']
-#         Cpassword = request.POST.get['Cpassword']
-
-#         # if password & Cpassword != '':
-#         #     new_data = videoMessage.objects.create(user=user, message=message, video_file=filename)
-
-
-#         # save the video file
-#         fs = FileSystemStorage()
-#         filename = fs.save(video.name, video)
-
-#         # create a new videoMessage object
-#         new_data = videoMessage.objects.create(user="aalok", message=message, video_file=video, password=password)
-#         new_data.save()
-#     return render(request, 'videosteganography/index.html')
+    video_file_path = os.path.join(settings.MEDIA_ROOT, f'{video_message.video_file}')
+    response = FileResponse(open(video_file_path, 'rb'))
+    response['Content-Disposition'] = f'attachment; filename="{video_message.video_file}"'
+    return response

@@ -1,0 +1,43 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+
+
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center  ">
+    <div class="container mt-5">
+        <div class="row mt-5">
+            <div class="col-md-6 col-sm-12">
+                <img class="img-fluid"
+                    src="https://images.pexels.com/photos/2095597/pexels-photo-2095597.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    alt="Video Steganography" srcset="">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <p class="title">Video Steganography</p>
+                <p class="tagline">Secure secrets with Video steganography - hidden in plain sight.</p>
+                <p class="desc">"Video steganography lets you hide confidential messages in plain sight. By embedding your secret information within videos, you can communicate securely without detection. It's a powerful tool for covert communication that guarantees the confidentiality of your messages."</p>
+
+
+                    <form action="{% url 'videosteganography:decode' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row mb-4">
+                            <label class="form-label" for="video">Upload your Video:</label>
+                            <input type="file" class="form-control" name="video_file" id="video" accept="video/*" required/>
+                        </div>
+                        <div class="row">
+                            <div class="col-md mb-4">
+                                <label class="form-label" for="password">Password</label>
+                                <input type="password" name="password" id="password" class="form-control" />
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="text-reset me-3 btn btn-success">
+                            <i class="fas fa-lock"></i> Decode
+                        </button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
