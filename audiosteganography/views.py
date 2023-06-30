@@ -97,8 +97,8 @@ def decode(request):
 
             # Render the success page with the decoded message
             context = {'message': decoded_message}
-            return render(request, 'audiosteganography/result.html', context)
-
+            return render(request, 'accounts/result.html', context)
+ 
         except Exception as e:
             # Handle any exceptions that occur during decoding
             print(f"Error: {e}")

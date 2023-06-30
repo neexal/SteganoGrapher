@@ -2,14 +2,22 @@
 {% load static %}
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-center vh-100 result">
-    <div class="text-center">
-        <h1 class="title">Decoded Message</h1>
-        <div class="card p-5 m-5">
-            <div class="card-body">
-                <p>{{ message }}</p>
-            </div>
-        </div>
-    </div>
-</div>
+<section class="mail-seccess section result">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6 offset-lg-3 col-12">
+				<!-- Error Inner -->
+				<div class="success-inner">
+					<h1><i class="fa fa-envelope"></i><span>MESSAGE DECODED SUCCESSFULLY</span></h1>
+                    <p class="lead">The message was: </p>
+					<p class="bg-secondary text-white">{{message}}</p>
+					<a href="{% url 'audiosteganography:index' %}" class="btn btn-primary btn-lg">Go Home</a>
+				</div>
+				<!--/ End Error Inner -->
+			</div>
+		</div>
+	</div>
+</section>
 {% endblock content %}
+
+

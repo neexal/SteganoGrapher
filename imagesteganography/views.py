@@ -138,7 +138,7 @@ def decode(request):
         message = find_data(image)
         os.remove(img_path)
         context = {'message': message, 'image': temp_image}
-        return render(request, 'imagesteganography/result.html', context)
+        return render(request, 'accounts/result.html', context)
     else:
         return render(request, 'imagesteganography/decode.html')
 

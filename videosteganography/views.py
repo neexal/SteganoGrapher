@@ -224,7 +224,7 @@ def decode(request):
         clean_temp()
         print("="*100)
 
-        return render(request, 'videosteganography/result.html', {'message': a})
+        return render(request, 'accounts/result.html', {'message': a})
 
     return render(request, 'videosteganography/decode.html')
  
