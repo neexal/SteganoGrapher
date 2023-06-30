@@ -227,7 +227,7 @@ def decode(request):
         return render(request, 'videosteganography/result.html', {'message': a})
 
     return render(request, 'videosteganography/decode.html')
-
+ 
 @login_required
 def download(request, video_message_id):
     video_message = VideoMessage.objects.get(id=video_message_id)

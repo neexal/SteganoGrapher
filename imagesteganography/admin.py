@@ -10,8 +10,8 @@ class ImageMessageAdmin(admin.ModelAdmin):
 
 admin.site.register(ImageMessage, ImageMessageAdmin)
 
-class DecodeImageMessageAdmin(admin.ModelAdmin):
-    list_display = ('id','user', 'image_file', 'password')
-    list_display_links = ('id','user', 'image_file')
+# class DecodeImageMessageAdmin(admin.ModelAdmin):
+#     list_display = ('id','user', 'image_file', 'password')
+#     list_display_links = ('id','user', 'image_file')
 
-admin.site.register(DecodeImageMessage, DecodeImageMessageAdmin)
+# admin.site.register(DecodeImageMessage, DecodeImageMessageAdmin)

@@ -5,6 +5,8 @@ import cv2
 from PIL import Image
 import os
 import numpy as np
+from django.http import FileResponse
+import mimetypes
 
 
 # Create your views here.
@@ -60,7 +62,7 @@ def encode(request):
 
         print("[INFO] Image Steganography ENCODING")
         print("")
-
+ 
         image = cv2.imread(file_path)
         img = Image.open(file_path, 'r')
         w, h = img.size
@@ -83,9 +85,14 @@ def encode(request):
 
         print("[INFO] ENCODING DATA Successful")
         print("[INFO] LOCATION: {}".format(file_path))
-        print("=" * 100)
-
-        return redirect('imagesteganography:download')
+        # print("=" * 100)
+        
+        # image = ImageMessage(message=message, image_file=file_path, user=request.user)
+        # image.save()
+        
+        response = FileResponse(open(file_path, 'rb'), content_type=mimetypes.guess_type(file_path)[0])
+        response['Content-Disposition'] = 'attachment; filename="encoded_image.png"'
+        return response
     else:
         return render(request, 'imagesteganography/index.html')
 
@@ -94,7 +101,7 @@ def decode(request):
     if request.method == 'POST':
         image_file = request.FILES.get('image_file')
         image = ImageMessage( image_file=image_file, user=request.user) # attach current user to image
-        image.save()
+        # image.save()
         temp_image = image
         img = Image.open(image_file)
         img_path = os.path.join('media', 'image', image_file.name)

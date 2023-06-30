@@ -3,7 +3,7 @@ import wave
 from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+
 
 
 def index(request):
@@ -12,8 +12,17 @@ def index(request):
         return redirect('accounts:login')
     return render(request, 'audiosteganography/index.html')
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.conf import settings
+from django.urls import reverse
+import os
+import wave
 
 
+
+
+# comment
 @login_required
 def encode(request):
     if request.method == 'POST':
@@ -30,10 +39,11 @@ def encode(request):
             # Open the input audio file
             audio = wave.open(input_audio, mode='rb')
             frames = audio.readframes(audio.getnframes())
-            frame_byte = bytearray(frames)
+            frame_list = list(frames)
+            frame_byte = bytearray(frame_list)
 
             # Encode the message in the audio frames
-            message += '000010110000101100001011'  # Add delimiter
+            message += '*^*^*'  # Add secret key
             results = []
             for char in message:
                 bits = bin(ord(char))[2:].zfill(8)
@@ -56,15 +66,15 @@ def encode(request):
 
             audio.close()
 
-        encoded_audio_path = os.path.join(settings.MEDIA_ROOT, 'audio', 'encoded_output.wav')
+        encoded_audio_path = os.path.join(settings.MEDIA_ROOT, 'audio', 'output.wav')
         encode_audio(audio_path, encoded_audio_path, message)
 
-        response = FileResponse(open(encoded_audio_path, 'rb'), content_type='audio/wav')
-        response['Content-Disposition'] = 'attachment; filename="encoded_output.wav"'
-        return response
-
+        encoded_file_path = os.path.relpath(encoded_audio_path, settings.MEDIA_ROOT)
+        download_link = reverse('audiosteganography:download', kwargs={'encoded_file_path': encoded_file_path})
+        return redirect(download_link)
     else:
         return render(request, 'audiosteganography/index.html')
+
 
 @login_required
 def decode(request):
@@ -90,7 +100,7 @@ def decode(request):
                 message += bin(byte)[-1]
 
             # Split the binary message using the delimiter
-            message = message.split('000010110000101100001011')[0]
+            message = message.split('*^*^*')[0]
 
             # Convert the binary message to ASCII characters
             decoded_message = ''.join(chr(int(message[i:i+8], 2)) for i in range(0, len(message), 8))
@@ -108,6 +118,7 @@ def decode(request):
     else:
         # Render the index page with the form
         return render(request, 'audiosteganography/decode.html')
+
 
 def download(request, encoded_file_path):
     file_path = os.path.join(settings.MEDIA_ROOT, encoded_file_path)
