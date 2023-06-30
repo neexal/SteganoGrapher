@@ -19,12 +19,12 @@
                 <p class="desc">"Transform the way you communicate sensitive information with image steganography. By hiding your confidential data within images, you can keep your secrets safe from prying eyes. With image steganography, you can communicate covertly and confidently, knowing that your message is secure.</p>
 
 
-                    <form action="{% url 'imagesteganography:decode' %}" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'textsteganography:decode' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         
                         <div class="row mb-4">
-                            <label class="form-label" for="image">Upload your Image:</label>
-                            <input type="file" class="form-control" name="image_file" id="image" accept="image/*" required/>
+                            <label class="form-label" for="text">Upload your Text File:</label>
+                            <input type="file" class="form-control" name="text_file" id="image" accept="txt/*" required/>
                         </div>
                         <div class="row">
                             <div class="col-md mb-4">
@@ -40,6 +40,7 @@
                         <button type="submit" class="text-reset me-3 btn btn-success">
                             <i class="fas fa-lock"></i> Decode
                         </button>
+                        {{message}}
                     </form>
             </div>
         </div>

@@ -1,9 +1,11 @@
-import os
 import wave
-from django.http import HttpResponse, FileResponse
-from django.shortcuts import render, redirect
+import os
 from django.conf import settings
-
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.http import HttpResponse, Http404
+import mimetypes
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -11,17 +13,7 @@ def index(request):
     if not request.user.is_authenticated:
         return redirect('accounts:login')
     return render(request, 'audiosteganography/index.html')
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.conf import settings
-from django.urls import reverse
-import os
-import wave
 
-
-
-
-# comment
 @login_required
 def encode(request):
     if request.method == 'POST':
@@ -38,24 +30,19 @@ def encode(request):
             # Open the input audio file
             audio = wave.open(input_audio, mode='rb')
             frames = audio.readframes(audio.getnframes())
-            frame_list = list(frames)
-            frame_byte = bytearray(frame_list)
+            frame_byte = bytearray(frames)
 
             # Encode the message in the audio frames
             message += '*^*^*'  # Add secret key
-            results = []
-            for char in message:
-                bits = bin(ord(char))[2:].zfill(8)
-                results.extend([int(bit) for bit in bits])
+            message_bytes = message.encode('utf-8')
+            message_length = len(message_bytes)
 
             index = 0
-            for i in range(len(results)):
+            for i in range(message_length):
                 byte = bin(frame_byte[index])[2:].zfill(8)
-                if byte[-2] == '0':
-                    frame_byte[index] = (frame_byte[index] & 253)
-                else:
-                    frame_byte[index] = (frame_byte[index] & 253) | 2
-                frame_byte[index] = (frame_byte[index] & 254) | results[i]
+                bit = bin(message_bytes[i])[2:].zfill(8)
+                modified_byte = byte[:-1] + bit[-1]
+                frame_byte[index] = int(modified_byte, 2)
                 index += 1
 
             # Save the encoded audio file
@@ -71,6 +58,7 @@ def encode(request):
         encoded_file_path = os.path.relpath(encoded_audio_path, settings.MEDIA_ROOT)
         download_link = reverse('audiosteganography:download', kwargs={'encoded_file_path': encoded_file_path})
         return redirect(download_link)
+
     else:
         return render(request, 'audiosteganography/index.html')
 
@@ -82,27 +70,31 @@ def decode(request):
         audio_file = request.FILES.get('audio_file')
 
         try:
-            # Save the uploaded audio file
-            audio_path = os.path.join(settings.MEDIA_ROOT, 'audio', 'input.wav')
-            with open(audio_path, 'wb') as file:
-                for chunk in audio_file.chunks():
-                    file.write(chunk)
-
             # Open the audio file using the wave module
-            audio = wave.open(audio_path, mode='rb')
-            frames = audio.readframes(audio.getnframes())
-            frame_byte = bytearray(frames)
+            song = wave.open(audio_file, mode='rb')
+            nframes = song.getnframes()
+            frames = song.readframes(nframes)
+            frame_list = list(frames)
+            frame_byte = bytearray(frame_list)
 
-            # Extract the encoded message from the audio frames
+            # Get the binary message from the audio file by reading the least significant bit of each audio frame
             message = ''
-            for byte in frame_byte:
-                message += bin(byte)[-1]
+            for i in range(0, len(frame_byte), 1):
+                res = bin(frame_byte[i])[2:].zfill(8)
+                message += res[len(res) - 1]
 
             # Split the binary message using the delimiter
             message = message.split('*^*^*')[0]
 
-            # Convert the binary message to ASCII characters
-            decoded_message = ''.join(chr(int(message[i:i+8], 2)) for i in range(0, len(message), 8))
+            # Convert the binary message to ASCII characters using the 'latin-1' encoding
+            decoded_message = ''
+            for i in range(0, len(message), 8):
+                byte = message[i:i+8]
+                try:
+                    char = chr(int(byte, 2))
+                except ValueError:
+                    char = '?'  # Placeholder for invalid characters
+                decoded_message += char
 
             # Render the success page with the decoded message
             context = {'message': decoded_message}
@@ -118,13 +110,24 @@ def decode(request):
         # Render the index page with the form
         return render(request, 'audiosteganography/decode.html')
 
-
+@login_required
 def download(request, encoded_file_path):
+    # Get the absolute file path
     file_path = os.path.join(settings.MEDIA_ROOT, encoded_file_path)
 
+    # Check if the file exists
     if os.path.exists(file_path):
-        response = FileResponse(open(file_path, 'rb'))
-        response['Content-Disposition'] = 'attachment; filename="encoded_audio.wav"'
+        # Set the appropriate content type
+        content_type, _ = mimetypes.guess_type(file_path)
+        response = HttpResponse(content_type=content_type)
+
+        # Set the file attachment headers
+        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+
+        # Open the file in binary mode and read the content
+        with open(file_path, 'rb') as file:
+            response.write(file.read())
+
         return response
     else:
-        return HttpResponse("File not found.")
+        raise Http404("The requested file does not exist.")

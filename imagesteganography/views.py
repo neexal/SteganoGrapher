@@ -17,21 +17,17 @@ def index(request):
     return render(request, 'imagesteganography/index.html')
 
 
+
+
 def encode(request):
     if request.method == 'POST':
         message = request.POST.get('message')
         image_file = request.FILES.get('image_file')
-        image = ImageMessage(message=message, image_file=image_file, user=request.user) # attach current user to image
+        image = ImageMessage(message=message, image_file=image_file, user=request.user)
         image.save()
-        
-        
-        # return redirect('imagesteganography:download')
-        
-            #Save image and retrieve file path
-        
+
         file_path = image.image_file.path
-        
-        # it converts data in binary format
+
         def data2binary(data):
             p = ''
             if type(data) == str:
@@ -39,15 +35,13 @@ def encode(request):
             elif type(data) == bytes or type(data) == np.ndarray:
                 p = [format(i, '08b') for i in data]
             return p
-        
-        # hide data in given img
+
         def hide_data(img, data):
-            data += "$$"  # '$$'--> secrete key
+            data += "$$"
             d_index = 0
             b_data = data2binary(data)
             len_data = len(b_data)
 
-            # iterate pixels from image and update pixel values
             for value in img:
                 for pix in value:
                     r, g, b = data2binary(pix)
@@ -63,11 +57,10 @@ def encode(request):
                     if d_index >= len_data:
                         break
             return img
-        
+
         print("[INFO] Image Steganography ENCODING")
         print("")
-        
-        # Read image and apply steganography
+
         image = cv2.imread(file_path)
         img = Image.open(file_path, 'r')
         w, h = img.size
@@ -78,25 +71,24 @@ def encode(request):
         cv2.imwrite(enc_img, enc_data)
         img1 = Image.open(enc_img, 'r')
         img1 = img1.resize((w, h), Image.Resampling.LANCZOS)
-        # optimize with 65% quality
         if w != h:
             img1.save(enc_img, optimize=True, quality=65)
         else:
             img1.save(enc_img)
         img.close()
         img1.close()
-        
-        # Replace original image with encoded image and delete temp image
+
         os.remove(file_path)
         os.rename(enc_img, file_path)
-        
+
         print("[INFO] ENCODING DATA Successful")
-        print("[INFO] LOCATION:{}".format(file_path))
+        print("[INFO] LOCATION: {}".format(file_path))
         print("=" * 100)
-        
+
         return redirect('imagesteganography:download')
     else:
         return render(request, 'imagesteganography/index.html')
+
 
 def decode(request):
     if request.method == 'POST':

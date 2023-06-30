@@ -7,5 +7,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('encode/', views.encode, name='encode'),
     path('decode/', views.decode, name='decode'),
-    path('download/', views.download, name='download'),
+    path('download/<path:encoded_file_path>/', views.download, name='download'),
+
 ]
