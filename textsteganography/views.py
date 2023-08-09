@@ -3,6 +3,10 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from .models import TextMessage
 
+from django.conf import settings
+from accounts.email_utils import send_email_with_attachment
+from pathlib import Path  # Import the Path class
+
 
 def index(request):
 
@@ -81,14 +85,37 @@ def encode(request):
             text = TextMessage(message=private, text_file=public, user=request.user)
             text.save()
             
-            
-            response = HttpResponse(content_type='text/plain')
-            response['Content-Disposition'] = 'attachment; filename="encoded.txt"'
+            if request.method =='POST' and 'send_email' in request.POST:
+                subject = 'Encoded Message'
+                em_message = 'Please find the attached file.'
+                from_email = 'testdjango890@gmail.com'  # Replace with your email address
+                to_email = request.POST.get('to_email')
+                recipient_list = [to_email]  # Replace with the recipient's email address
 
-            encoded_text = public_text.encode('utf-8')
-            response.write(encoded_text)
-            return response
-    return render(request, 'textsteganography/encode.html')
+                response = HttpResponse(content_type='text/plain')
+                response['Content-Disposition'] = 'attachment; filename="encoded.txt"'
+                encoded_text = public_text.encode('utf-8')
+                response.write(encoded_text)
+                
+                temp_file_path = Path(settings.MEDIA_ROOT) / 'temp_encoded_text.txt'
+                with open(temp_file_path, 'wb') as temp_file:
+                    temp_file.write(encoded_text)
+
+                send_email_with_attachment(subject, em_message, from_email, recipient_list, temp_file_path)
+
+                # Clean up: Remove the temporary file
+                temp_file_path.unlink()
+
+                return HttpResponse('Email sent with encoded Text attachment.')
+            
+            else:  
+                response = HttpResponse(content_type='text/plain')
+                response['Content-Disposition'] = 'attachment; filename="encoded.txt"'
+            
+                encoded_text = public_text.encode('utf-8')
+                response.write(encoded_text)
+                return response
+    return render(request, 'textsteganography/index.html')
 
 
 def decode(request):

@@ -9,7 +9,11 @@ import os
 import struct
 import numpy as np
 from django.conf import settings
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
+from django.conf import settings
+from accounts.email_utils import send_email_with_attachment
+from pathlib import Path  # Import the Path class
+import mimetypes
 
 
 def index(request):
@@ -100,8 +104,34 @@ def encode(request):
         # Save the encoded video file in the database
         video_message = VideoMessage.objects.create(user=request.user, message=message, video_file=video_path)
         video_message.save()
+        if request.method == 'POST' and 'send_email' in request.POST:
+            subject = 'Encoded Message'
+            em_message = 'Please find the attached file.'
+            from_email = 'testdjango890@gmail.com'  # Replace with your email address
+            to_email = request.POST.get('to_email')
+            recipient_list = [to_email]  # Replace with the recipient's email address
 
-        return redirect('videosteganography:download', video_message_id=video_message.id)
+            # Generate the FileResponse for the encoded image
+            encoded_video_response = FileResponse(open(video_path, 'rb'), content_type=mimetypes.guess_type(video_path)[0])
+            encoded_video_response['Content-Disposition'] = 'attachment; filename="encoded_output.mp4"'
+
+            # Save the FileResponse to a temporary file
+            temp_file_path = Path(settings.MEDIA_ROOT) / 'temp_encoded_output.mp4'
+            with open(temp_file_path, 'wb') as temp_file:
+                for chunk in encoded_video_response.streaming_content:
+                    temp_file.write(chunk)
+
+            # Send the email with the temporary file as an attachment
+            send_email_with_attachment(subject, em_message, from_email, recipient_list, temp_file_path)
+
+            # Clean up: Remove the temporary file
+            temp_file_path.unlink()
+
+            return HttpResponse('Email sent with encoded audio attachment.')
+        
+        else:
+            return redirect('videosteganography:download', video_message_id=video_message.id)
+    return render(request, 'videosteganography/index.html')
 
 import os
 import shutil

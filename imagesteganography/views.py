@@ -5,8 +5,12 @@ import cv2
 from PIL import Image
 import os
 import numpy as np
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 import mimetypes
+
+from django.conf import settings
+from accounts.email_utils import send_email_with_attachment
+from pathlib import Path  # Import the Path class
 
 
 # Create your views here.
@@ -60,8 +64,8 @@ def encode(request):
                         break
             return img
 
-        print("[INFO] Image Steganography ENCODING")
-        print("")
+        # print("[INFO] Image Steganography ENCODING")
+        # print("")
  
         image = cv2.imread(file_path)
         img = Image.open(file_path, 'r')
@@ -83,16 +87,41 @@ def encode(request):
         os.remove(file_path)
         os.rename(enc_img, file_path)
 
-        print("[INFO] ENCODING DATA Successful")
-        print("[INFO] LOCATION: {}".format(file_path))
+        # print("[INFO] ENCODING DATA Successful")
+        # print("[INFO] LOCATION: {}".format(file_path))
         # print("=" * 100)
         
         # image = ImageMessage(message=message, image_file=file_path, user=request.user)
         # image.save()
+        if request.method =='POST' and 'send_email' in request.POST:
+            subject = 'Encoded Message'
+            em_message = 'Please find the attached file.'
+            from_email = 'testdjango890@gmail.com'  # Replace with your email address
+            to_email = request.POST.get('to_email')
+            recipient_list = [to_email]  # Replace with the recipient's email address
+
+            # Generate the FileResponse for the encoded image
+            encoded_image_response = FileResponse(open(file_path, 'rb'), content_type=mimetypes.guess_type(file_path)[0])
+            encoded_image_response['Content-Disposition'] = 'attachment; filename="encoded_image.png"'
+
+            # Save the FileResponse to a temporary file
+            temp_file_path = Path(settings.MEDIA_ROOT) / 'temp_encoded_image.png'
+            with open(temp_file_path, 'wb') as temp_file:
+                for chunk in encoded_image_response.streaming_content:
+                    temp_file.write(chunk)
+
+            # Send the email with the temporary file as an attachment
+            send_email_with_attachment(subject, em_message, from_email, recipient_list, temp_file_path)
+
+            # Clean up: Remove the temporary file
+            temp_file_path.unlink()
+
+            return HttpResponse('Email sent with encoded image attachment.')
         
-        response = FileResponse(open(file_path, 'rb'), content_type=mimetypes.guess_type(file_path)[0])
-        response['Content-Disposition'] = 'attachment; filename="encoded_image.png"'
-        return response
+        else:
+            response = FileResponse(open(file_path, 'rb'), content_type=mimetypes.guess_type(file_path)[0])
+            response['Content-Disposition'] = 'attachment; filename="encoded_image.png"'
+            return response
     else:
         return render(request, 'imagesteganography/index.html')
 
@@ -147,3 +176,5 @@ def download(request):
     latest_image = ImageMessage.objects.filter(user=request.user).latest('uploaded_at')
     context = {'image': latest_image}
     return render(request, 'imagesteganography/download.html', context)
+
+

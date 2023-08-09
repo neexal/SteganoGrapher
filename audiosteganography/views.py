@@ -5,6 +5,10 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
+from django.conf import settings
+from accounts.email_utils import send_email_with_attachment
+from pathlib import Path  # Import the Path class
+import mimetypes
 
 def index(request):
     #if user is not logged in, redirect to home page
@@ -59,9 +63,35 @@ def encode(request):
         encoded_audio_path = os.path.join(settings.MEDIA_ROOT, 'audio', 'encoded_output.wav')
         encode_audio(audio_path, encoded_audio_path, message)
 
-        response = FileResponse(open(encoded_audio_path, 'rb'), content_type='audio/wav')
-        response['Content-Disposition'] = 'attachment; filename="encoded_output.wav"'
-        return response
+        if request.method == 'POST' and 'send_email' in request.POST:
+            subject = 'Encoded Message'
+            em_message = 'Please find the attached file.'
+            from_email = 'testdjango890@gmail.com'  # Replace with your email address
+            to_email = request.POST.get('to_email')
+            recipient_list = [to_email]  # Replace with the recipient's email address
+
+            # Generate the FileResponse for the encoded image
+            encoded_image_response = FileResponse(open(audio_path, 'rb'), content_type=mimetypes.guess_type(audio_path)[0])
+            encoded_image_response['Content-Disposition'] = 'attachment; filename="encoded_output.wav"'
+
+            # Save the FileResponse to a temporary file
+            temp_file_path = Path(settings.MEDIA_ROOT) / 'temp_encoded_output.wav'
+            with open(temp_file_path, 'wb') as temp_file:
+                for chunk in encoded_image_response.streaming_content:
+                    temp_file.write(chunk)
+
+            # Send the email with the temporary file as an attachment
+            send_email_with_attachment(subject, em_message, from_email, recipient_list, temp_file_path)
+
+            # Clean up: Remove the temporary file
+            temp_file_path.unlink()
+
+            return HttpResponse('Email sent with encoded audio attachment.')
+        
+        else:
+            response = FileResponse(open(encoded_audio_path, 'rb'), content_type='audio/wav')
+            response['Content-Disposition'] = 'attachment; filename="encoded_output.wav"'
+            return response
 
     else:
         return render(request, 'audiosteganography/index.html')
@@ -84,20 +114,22 @@ def decode(request):
             frames = audio.readframes(audio.getnframes())
             frame_byte = bytearray(frames)
 
-            # Extract the encoded message from the audio frames
             message = ''
-            for byte in frame_byte:
-                message += bin(byte)[-1]
+            delimiter = '000010110000101100001011'
+            delimiter_length = len(delimiter)
 
-            # Split the binary message using the delimiter
-            message = message.split('000010110000101100001011')[0]
+            for i in range(len(frame_byte) - delimiter_length + 1):
+                chunk = frame_byte[i:i+delimiter_length]
+                if all(bit & 1 == int(delimiter[j]) for j, bit in enumerate(chunk)):
+                    break  # Stop if delimiter is found
+                message += bin(frame_byte[i])[-1]
 
             # Convert the binary message to ASCII characters
             decoded_message = ''.join(chr(int(message[i:i+8], 2)) for i in range(0, len(message), 8))
 
             # Render the success page with the decoded message
             context = {'message': decoded_message}
-            return render(request, 'accounts/result.html', context)
+            return render(request, 'audiosteganography/result.html', context)
  
         except Exception as e:
             # Handle any exceptions that occur during decoding
