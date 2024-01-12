@@ -10,7 +10,7 @@ def login_view(request):
 
     #prevents access by logged in users
     if request.user.is_authenticated:
-        return redirect('audiosteganography:index')
+        return redirect('imagesteganography:index')
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -19,7 +19,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('audiosteganography:index')
+            return redirect('imagesteganography:index')
         else:
             return render(request, 'accounts/login.html', {
                 'message': 'Invalid username and/or password'
@@ -35,14 +35,14 @@ def register_view(request):
 
     #prevents access by logged in users
     if request.user.is_authenticated:
-        return redirect('audiosteganography:index')
+        return redirect('imagesteganography:index')
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('audiosteganography:index')
+            return redirect('imagesteganography:index')
         else:
             #checks if username is taken
             username = request.POST['username']

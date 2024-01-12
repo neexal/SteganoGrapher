@@ -36,6 +36,7 @@ urlpatterns = [
     path('textsteganography/', include('textsteganography.urls', namespace='textsteganography')),
     path('imagesteganography/', include('imagesteganography.urls', namespace='imagesteganography')),
     path('videosteganography/', include('videosteganography.urls', namespace='videosteganography')),
+    path('', include('pwa.urls')),
 
 ]
 

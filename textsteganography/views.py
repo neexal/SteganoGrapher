@@ -138,7 +138,7 @@ def decode(request):
             context = {
                 'message': message,
             }
-            return render(request, 'textsteganography/result.html', context)
+            return render(request, 'accounts/result.html', context)
 
     return render(request, 'textsteganography/decode.html')
 

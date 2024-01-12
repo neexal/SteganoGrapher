@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'textsteganography',
     'imagesteganography',
     'videosteganography',
+    'pwa',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -155,3 +156,36 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'testdjango890@gmail.com'
 EMAIL_HOST_PASSWORD = 'dvqpdozgxyquoumy'  # Replace with your email password
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, '/accounts/static/accounts/js', 'serviceworker.js')
+
+
+PWA_APP_NAME = 'SteganoGrapher'
+PWA_APP_DESCRIPTION = "SteganoGrapher PWA"
+PWA_APP_THEME_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': 'https://i.ibb.co/FgVp83W/logo-original.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': 'https://i.ibb.co/FgVp83W/logo-original.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': 'https://i.ibb.co/FgVp83W/logo-original.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'

@@ -95,7 +95,7 @@ def encode(request):
 
     else:
         return render(request, 'audiosteganography/index.html')
-
+    
 @login_required
 def decode(request):
     if request.method == 'POST':

@@ -69,3 +69,14 @@ a{
     margin-bottom: 30px;
     text-align: justify;
   }
+
+  input {
+    padding: 0.2em; 
+    box-sizing: border-box;
+    width: 100%;
+  } 
+
+label, span{
+    color: rgba(0,0,0,.6);
+    font-weight: 600;
+}
